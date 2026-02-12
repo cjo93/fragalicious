@@ -4,11 +4,39 @@ import { useState, useEffect, useRef } from 'react'
 import { useChat } from 'ai/react'
 import { fetchClinicalAnalysis, BirthDataInput, ClinicalAnalysisResponse } from '@/lib/api'
 import Pricing from './Pricing'
+import InsightCard from './InsightCard'
+import FamilyMap from './FamilyMap'
 
 export default function CommandStream() {
-  const { messages: aiMessages, input, handleInputChange, handleSubmit: handleAiSubmit, isLoading: aiLoading } = useChat({
+  const { messages: aiMessages, input, handleInputChange, handleSubmit, isLoading: aiLoading } = useChat({
     api: '/api/chat',
+    body: {
+      context: {
+        user_id: "user_123",
+        session_id: "session_456",
+        current_transits: {
+          saturn: { sign: "pisces", house: 10, retrograde: true },
+          mars: { sign: "aries", house: 1 }
+        },
+        family_context: [
+          { relation: "Mother", tag: "Critical", line_mechanic: "Line 1" }
+        ],
+        user_mechanics: {
+          type: "Projector",
+          authority: "Splenic",
+          profile: "5/1"
+        }
+      }
+    }
   })
+
+  const handleAiSubmit = (e: React.FormEvent) => {
+    handleSubmit(e, {
+      body: {
+        message: input,
+      }
+    })
+  }
 
   const [manualMessages, setManualMessages] = useState<{ role: 'user' | 'system' | 'result', content: any }[]>([
     { role: 'system', content: '[!] SYSTEM: INITIALIZING SINGLE STREAM INTERFACE...' },
@@ -84,6 +112,51 @@ export default function CommandStream() {
     // Default: Send to AI Kernel
     handleAiSubmit(e)
   }
+
+  const renderAiMessage = (m: any) => {
+    const content = m.content;
+    if (content === 'PRICING_TABLE') return <Pricing />;
+    
+    // If it looks like JSON chunks (common in our new API spec)
+    if (content.includes('{"type":') || content.includes('{"tool":')) {
+      const lines = content.split('\n').filter((l: string) => l.trim());
+      return (
+        <div className="flex flex-col gap-y-4">
+          {lines.map((line: string, idx: number) => {
+            try {
+              // Basic check to see if it's a complete JSON object
+              if (!line.startsWith('{') || !line.endsWith('}')) {
+                return null;
+              }
+              const data = JSON.parse(line);
+              if (data.type === 'text' || data.type === 'delta') {
+                return <span key={idx} className="whitespace-pre-wrap inline">{data.content || data.text}</span>;
+              }
+              if (data.type === 'error') {
+                return <div key={idx} className="border-2 border-red-500 p-2 text-red-500 font-bold bg-red-500/10">
+                  [!] SYSTEM_ERROR: {data.content || data.message}
+                </div>;
+              }
+              if (data.type === 'tool_call') {
+                if (data.tool === 'generate_insight_card') {
+                  return <InsightCard key={idx} {...data.props} />;
+                }
+                if (data.tool === 'generate_family_map') {
+                  return <FamilyMap key={idx} {...data.props} />;
+                }
+              }
+              return null;
+            } catch (e) {
+              // Not valid JSON yet or not JSON at all
+              return <div key={idx} className="whitespace-pre-wrap">{line}</div>;
+            }
+          })}
+        </div>
+      );
+    }
+
+    return <div className="whitespace-pre-wrap">{content}</div>;
+  };
 
   const renderResult = (result: ClinicalAnalysisResponse) => {
     return (
@@ -185,8 +258,8 @@ export default function CommandStream() {
             </div>
             <div className={`pl-4 border-l-4 ${
               m.role === 'user' ? 'border-white' : 'border-brutalist_slate text-brutalist_slate'
-            } whitespace-pre-wrap text-sm md:text-base`}>
-              {m.content === 'PRICING_TABLE' ? <Pricing /> : m.content}
+            } text-sm md:text-base`}>
+              {renderAiMessage(m)}
             </div>
           </div>
         ))}

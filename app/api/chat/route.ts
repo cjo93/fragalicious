@@ -11,26 +11,77 @@ const PYTHON_MICROSERVICE_URL = process.env.PYTHON_MICROSERVICE_URL || 'http://l
 
 export async function POST(req: Request) {
   try {
-    const { messages, data: birthData } = await req.json();
-    const lastMessage = messages[messages.length - 1];
+    const body = await req.json();
+    // The new structure according to API.md
+    const { message, context, messages } = body;
+    
+    // Fallback for old structure or useChat's default messages array
+    const userMessage = message || (messages && messages[messages.length - 1]?.content) || "";
 
     console.log('Forwarding to Python Microservice:', {
-      input: lastMessage.content,
-      birthData: birthData || 'NOT_PROVIDED'
+      message: userMessage,
+      context: context || 'NOT_PROVIDED'
     });
 
-    // Mocking a streaming response for initial scaffold
-    let text = `ACKNOWLEDGED. PROCESSING FRAGMENT: "${lastMessage.content}". CONNECTING TO CORE_LOGIC...`;
-    
-    if (lastMessage.content.toUpperCase().includes('PRICING') || lastMessage.content.toUpperCase().includes('UPGRADE')) {
-        text = 'PRICING_TABLE';
-    }
-
-    // Create a simple stream
+    // Simulate the stream according to API.md
     const stream = new ReadableStream({
-      start(controller) {
+      async start(controller) {
         const encoder = new TextEncoder();
-        controller.enqueue(encoder.encode(text));
+
+        // Helper to send JSON chunks
+        const sendChunk = (obj: any) => {
+          controller.enqueue(encoder.encode(JSON.stringify(obj) + '\n'));
+        };
+
+        if (userMessage.toUpperCase().includes('MOM') || userMessage.toUpperCase().includes('MOTHER')) {
+           sendChunk({
+             type: "tool_call",
+             tool: "generate_insight_card",
+             props: {
+               type: "friction",
+               status: "active",
+               mechanic: "Line 1 (Investigator) vs Line 5 (Heretic)",
+               analysis: "Your Mother (Line 1) requires foundational proof to feel safe. You (Line 5) operate on projection and generalisation. She perceives your lack of detail as danger; you perceive her questions as interrogation."
+             }
+           });
+           
+           await new Promise(r => setTimeout(r, 800));
+
+           sendChunk({
+             type: "tool_call",
+             tool: "generate_family_map",
+             props: {
+               nodes: [
+                 { id: "1", label: "User", type: "self" },
+                 { id: "2", label: "Mother", type: "ancestor", trait: "Critical" }
+               ],
+               edges: [
+                 { source: "2", target: "1", label: "Judgment Loop", color: "red", animated: true }
+               ]
+             }
+           });
+
+           await new Promise(r => setTimeout(r, 800));
+
+           sendChunk({
+             type: "text",
+             content: "The map shows a recursive judgment loop. This anxiety didn't start with her; she is repeating a script."
+           });
+        } else if (userMessage.toUpperCase().includes('PRICING') || userMessage.toUpperCase().includes('UPGRADE')) {
+            // Special case for pricing table
+            controller.enqueue(encoder.encode('PRICING_TABLE'));
+        } else {
+            sendChunk({ 
+              type: "text", 
+              content: `ACKNOWLEDGED. FRAGMENT_RECEIVED: "${userMessage.toUpperCase()}".` 
+            });
+            await new Promise(r => setTimeout(r, 500));
+            sendChunk({
+              type: "text",
+              content: "SYSTEM STANDBY. CORE_LOGIC_CONNECTED."
+            });
+        }
+
         controller.close();
       },
     });
