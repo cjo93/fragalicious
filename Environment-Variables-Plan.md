@@ -14,6 +14,8 @@ Environment Variables Plan
   - STRIPE_PRICE_ID_ONE_TIME_5: price_...
   - STRIPE_PRICE_ID_ONE_TIME_7: price_...
 
+**ACTION REQUIRED:** Replace placeholders with your actual Stripe Price IDs once products are created in Stripe: STRIPE_PRICE_ID_MANUAL_27, STRIPE_PRICE_ID_OS_MONTHLY, STRIPE_PRICE_ID_OS_ANNUAL, STRIPE_PRICE_ID_ONE_TIME_5, STRIPE_PRICE_ID_ONE_TIME_7.
+
 - Secret management:
   - Store all keys in Vercel/CI secrets; rotate credentials on cadence and after any suspected exposure.
   - Never commit live keys in repository; only reference via environment variables at build/run time.

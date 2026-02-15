@@ -1,6 +1,6 @@
-import { stripe } from '@/lib/stripe';
+import { stripe, CREDIT_MAP } from '@/lib/stripe';
 import { NextApiRequest, NextApiResponse } from 'next';
-import { addCredits } from '@/lib/api';
+import { supabaseAdmin } from '@/lib/supabaseClient';
 
 export const config = {
   api: {
@@ -11,34 +11,53 @@ export const config = {
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method !== 'POST') return res.status(405).end();
   const signature = req.headers['stripe-signature'] as string;
-  // Manually accumulate raw body to verify Stripe signature without relying on external libs
+  // Accumulate raw body to verify signature
   const rawBody = await new Promise<Buffer>((resolve, reject) => {
     const chunks: Buffer[] = [];
     req.on('data', (chunk) => chunks.push(Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk)));
     req.on('end', () => resolve(Buffer.concat(chunks)));
     req.on('error', reject);
   });
+
   try {
-    const event = stripe.webhooks.constructEvent(
-      rawBody,
-      signature,
-      process.env.STRIPE_WEBHOOK_SECRET!
-    );
+    const event = stripe.webhooks.constructEvent(rawBody, signature, process.env.STRIPE_WEBHOOK_SECRET!);
     if (event.type === 'checkout.session.completed') {
-      // Retrieve the session with line items to obtain priceId
       const session = event.data.object as any;
-      // @ts-ignore - runtime Stripe types may vary across versions
-      const sessionWithItems = await (stripe.checkout.sessions.retrieve as any)(session.id, {
-        expand: ['line_items', 'line_items.price'],
-      });
-      const priceId = sessionWithItems.line_items?.data?.[0]?.price?.id;
-      const userId = sessionWithItems.client_reference_id as string;
-      const credits = creditsForPrice(priceId);
+      const userId = session.metadata?.userId as string;
+      const credits = Number(session.metadata?.targetCredits ?? 0);
       if (userId && credits > 0) {
         try {
-          await addCredits(userId, credits);
+          await supabaseAdmin.rpc('increment_credits', { user_uuid: userId, amount: credits });
         } catch (e) {
           console.error('[WEBHOOK] Could not apply credits for user', userId, e);
+        }
+      }
+    } else if (event.type === 'invoice.paid') {
+      const invoice = event.data.object as any;
+      // Resolve priceId from the subscription's items if possible
+      let credits = 0;
+      const customerEmail = invoice.customer_email;
+      const subscriptionId = invoice.subscription;
+      let priceId: string | undefined;
+      try {
+        if (subscriptionId) {
+          const sub = await (stripe.subscriptions.retrieve as any)(subscriptionId, { expand: ['items.data.price'] });
+          priceId = sub.items.data[0]?.price?.id;
+        } else {
+          priceId = invoice.lines?.data?.[0]?.price?.id;
+        }
+        credits = priceId ? CREDIT_MAP[priceId] ?? 0 : 0;
+      } catch (e) {
+        // Ignore if we can't resolve price
+      }
+      if (credits > 0 && customerEmail) {
+        const { data: profile, error } = await supabaseAdmin.from('profiles').select('id').eq('email', customerEmail).single();
+        if (profile && profile.id) {
+          try {
+            await supabaseAdmin.rpc('increment_credits', { user_uuid: profile.id, amount: credits });
+          } catch (e) {
+            console.error('[WEBHOOK] Could not apply credits for user by email', customerEmail, e);
+          }
         }
       }
     }
@@ -46,17 +65,4 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   } catch (err: any) {
     res.status(400).send(`Webhook Error: ${err.message}`);
   }
-}
-
-function creditsForPrice(priceId?: string): number {
-  if (!priceId) return 0;
-  const map: Record<string, number> = {
-    // Map these to your actual Stripe price IDs via environment variables in production
-    [process.env.PRICE_ID_MANUAL_27 || '']: 10,
-    [process.env.PRICE_ID_MONTHLY_9_99 || '']: 1,
-    [process.env.PRICE_ID_ANNUAL_99_99 || '']: 12,
-    [process.env.PRICE_ID_ONE_TIME_5 || '']: 1,
-    [process.env.PRICE_ID_ONE_TIME_7 || '']: 2,
-  };
-  return map[priceId] ?? 0;
 }

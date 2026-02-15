@@ -8,6 +8,14 @@ export const stripe = new (Stripe as any)(STRIPE_KEY, { apiVersion: '2022-11-15'
 
 export type CheckoutMode = 'subscription' | 'payment'
 
+// Credit mapping: price IDs -> compute credits
+export const CREDIT_MAP: Record<string, number> = {
+  [process.env.STRIPE_PRICE_ID_MANUAL_27 || '']: 10,
+  [process.env.STRIPE_PRICE_ID_OS_MONTHLY || '']: 10,
+  [process.env.STRIPE_PRICE_ID_OS_ANNUAL || '']: 120,
+  // Optional additional price IDs can be wired later
+}
+
 // Create a Checkout Session for MVP price points
 export async function createCheckoutSession(
   priceId: string,
