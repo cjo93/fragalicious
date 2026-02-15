@@ -15,7 +15,7 @@ export async function createCheckoutSession(
   successUrl: string,
   cancelUrl: string,
   clientReferenceId?: string
-): Promise<string> {
+): Promise<{ sessionId: string; sessionUrl: string }> {
   const session = await stripe.checkout.sessions.create({
     mode,
     line_items: [
@@ -28,5 +28,5 @@ export async function createCheckoutSession(
     cancel_url: cancelUrl,
     client_reference_id: clientReferenceId,
   })
-  return session.url
+  return { sessionId: session.id, sessionUrl: session.url }
 }

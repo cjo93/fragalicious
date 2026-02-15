@@ -35,7 +35,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       const userId = sessionWithItems.client_reference_id as string;
       const credits = creditsForPrice(priceId);
       if (userId && credits > 0) {
-        await addCredits(userId, credits);
+        try {
+          await addCredits(userId, credits);
+        } catch (e) {
+          console.error('[WEBHOOK] Could not apply credits for user', userId, e);
+        }
       }
     }
     res.status(200).json({ received: true });

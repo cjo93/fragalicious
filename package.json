@@ -24,6 +24,7 @@
     "react-error-boundary": "^6.1.1",
     "reactflow": "^11.10.1",
     "stripe": "^14.14.0",
+    "@stripe/stripe-js": "^1.60.0",
     "tailwind-merge": "^2.2.0"
   },
   "devDependencies": {
