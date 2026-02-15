@@ -1,19 +1,22 @@
 // Stripe utility (realistic MVP with Stripe SDK)
 import Stripe from 'stripe'
 const STRIPE_KEY = process.env.STRIPE_LIVE_KEY || process.env.STRIPE_TEST_KEY
-if (!STRIPE_KEY) {
-  throw new Error('Stripe key not defined in environment variables')
+let _stripeInstance: any = null
+if (STRIPE_KEY) {
+  _stripeInstance = new (Stripe as any)(STRIPE_KEY, { apiVersion: '2022-11-15' })
 }
-export const stripe = new (Stripe as any)(STRIPE_KEY, { apiVersion: '2022-11-15' })
+export const stripe = _stripeInstance
 
 export type CheckoutMode = 'subscription' | 'payment'
 
 // Credit mapping: price IDs -> compute credits
 export const CREDIT_MAP: Record<string, number> = {
   [process.env.STRIPE_PRICE_ID_MANUAL_27 || '']: 10,
+  [process.env.STRIPE_PRICE_ID_ONE_TIME_5 || '']: 5,
+  [process.env.STRIPE_PRICE_ID_ONE_TIME_7 || '']: 7,
   [process.env.STRIPE_PRICE_ID_OS_MONTHLY || '']: 10,
   [process.env.STRIPE_PRICE_ID_OS_ANNUAL || '']: 120,
-  // Optional additional price IDs can be wired later
+  // Additional mapping can be added here as needed
 }
 
 // Create a Checkout Session for MVP price points

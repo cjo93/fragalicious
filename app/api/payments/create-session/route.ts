@@ -21,10 +21,12 @@ export async function POST(req: Request) {
     }
 
     // 3. LOGIC: Determine Mode (Payment vs Subscription)
-    // If it's the $27 Manual, it's 'payment'. If it's OS, it's 'subscription'.
     const mode = priceId === process.env.STRIPE_PRICE_ID_MANUAL_27 ? 'payment' : 'subscription';
 
     // 4. EXECUTION: Create Stripe Session
+    if (!stripe) {
+      return NextResponse.json({ error: 'Stripe not configured' }, { status: 503 });
+    }
     const session = await stripe.checkout.sessions.create({
       mode: mode,
       payment_method_types: ['card'],

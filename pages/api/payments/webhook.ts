@@ -19,6 +19,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     req.on('error', reject);
   });
 
+  if (!stripe) {
+    return res.status(503).json({ error: 'Stripe not configured' });
+  }
   try {
     const event = stripe.webhooks.constructEvent(rawBody, signature, process.env.STRIPE_WEBHOOK_SECRET!);
     if (event.type === 'checkout.session.completed') {

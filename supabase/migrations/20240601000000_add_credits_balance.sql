@@ -5,7 +5,7 @@ CREATE OR REPLACE FUNCTION increment_credits(user_uuid UUID, amount INTEGER)
 RETURNS VOID
 LANGUAGE plpgsql
 SECURITY DEFINER
-AS $${
+AS $$
   BEGIN
     UPDATE public.profiles
     SET credits_balance = credits_balance + amount
