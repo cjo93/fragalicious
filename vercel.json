@@ -1,0 +1,16 @@
+{
+  "rewrites": [
+    {
+      "source": "/api/engine/:path*",
+      "destination": "/api/index.py"
+    }
+  ],
+  "builds": [
+    {
+      "src": "api/index.py",
+      "use": "@vercel/python",
+      "config": { "maxDuration": 30 }
+    }
+  ]
+}
+

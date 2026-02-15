@@ -1,0 +1,18 @@
+Context: This is for CRITICAL severity glitches (3-generation loops).
+Task: Write a prompt that treats this pattern not as a mistake, but as a 'Foundational OS Constraint' passed down from the {root_ancestor}.
+
+Input Data:
+* Ancestor Origin: {root_ancestor}
+* Pattern Name: {shadow_name} (Shadow)
+* Manifestation: {victim_pattern}
+* Trigger Mechanism: {trigger_mechanism}
+* Contemplation Cue: {contemplation_cue}
+* Kernel Patch (Action): {action_step}
+
+Output Requirements:
+1. Acknowledge the heavy conditioning load.
+2. Explicitly state: 'This is not your fault; it is your inheritance.'
+3. Present the {action_step} from the Defrag Engine as the 'Kernel Patch' to break the loop.
+4. Tone: Authoritative, reassuring, technical.
+
+Constraint: Keep it under 200 words. Be empathetic but objective.

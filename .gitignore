@@ -44,3 +44,4 @@ next-env.d.ts
 .junie/
 .ai/
 backend_context/
+__pycache__/

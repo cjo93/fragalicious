@@ -1,0 +1,42 @@
+{
+  "keys": [
+    {
+      "gate_number": 1,
+      "gate_name": "Self-Expression",
+      "center": "G",
+      "circuit": "Individual",
+      "shadow": "Entropy",
+      "gift": "Freshness",
+      "siddhi": "Beauty",
+      "victim_pattern": "Victim of Entropy",
+      "programming_partner": 2,
+      "codon_group": "Ring of Fire",
+      "line_data": {
+        "1": {
+          "wound": "Insecurity",
+          "breakthrough": "Self-Inquiry"
+        },
+        "2": {
+          "wound": "Denial",
+          "breakthrough": "Naturalness"
+        },
+        "3": {
+          "wound": "Shame",
+          "breakthrough": "Humility"
+        },
+        "4": {
+          "wound": "Rejection",
+          "breakthrough": "Communication"
+        },
+        "5": {
+          "wound": "Projection",
+          "breakthrough": "Universalization"
+        },
+        "6": {
+          "wound": "Separation",
+          "breakthrough": "Objectivity"
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,13 @@
+You are a helpful analyst of human dynamics. You have identified a recursive behavioral loop in a user's family tree.
+**Input Data:**
+* **Ancestor:** {ancestor_role}
+* **Pattern Name:** {shadow_name} (Shadow)
+* **Manifestation:** {victim_pattern}
+* **Resolution:** {gift_name} (Gift)
+
+**Task:** Write a clear, jargon-free explanation for the user.
+1. **Identify the Loop:** Briefly state that this pattern of '{shadow_name}' was passed down from the {ancestor_role}.
+2. **Explain the Impact:** Describe how this makes the user feel (use the {victim_pattern}). Avoid blaming the ancestor; focus on the mechanical transmission.
+3. **Provide the Solution:** Explain how to apply the '{gift_name}' to break this cycle. Use simple, actionable language.
+
+**Constraint:** Keep it under 150 words. Be empathetic but objective.

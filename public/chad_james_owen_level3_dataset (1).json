@@ -1,0 +1,18 @@
+{
+  "insight_card": {
+    "type": "friction",
+    "status": "active",
+    "mechanic": "Line 1 (Investigator) vs Line 5 (Heretic)",
+    "analysis": "Your Mother (Line 1) requires foundational proof to feel safe. You (Line 5) operate on projection and generalisation. She perceives your lack of detail as danger; you perceive her questions as interrogation."
+  },
+  "family_map": {
+    "nodes": [
+      { "id": "1", "label": "User", "type": "self" },
+      { "id": "2", "label": "Mother", "type": "ancestor", "trait": "Critical" }
+    ],
+    "edges": [
+      { "source": "2", "target": "1", "label": "Judgment Loop", "color": "red", "animated": true }
+    ]
+  },
+  "synthesis": "The map shows a recursive judgment loop. This anxiety didn't start with her; she is repeating a script."
+}

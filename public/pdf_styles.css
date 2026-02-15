@@ -1,0 +1,21 @@
+@page {
+    size: A4;
+    margin: 0;
+    background-color: #0F172A; /* Deep Charcoal */
+}
+body {
+    color: #F8FAFC; /* Paper White */
+    font-family: 'Merriweather', serif;
+}
+.gold-line {
+    border-bottom: 1px solid #D4AF37; /* Warm Gold */
+    width: 100%;
+    margin: 20px 0;
+}
+.warning-box {
+    border: 1px solid #EF4444;
+    background: rgba(239, 68, 68, 0.1);
+    padding: 15px;
+    border-radius: 4px; /* "The Fence" visual */
+}
+

@@ -34,6 +34,16 @@ export async function POST(req: Request) {
         };
 
         if (userMessage.toUpperCase().includes('MOM') || userMessage.toUpperCase().includes('MOTHER')) {
+           // Crisis detection simulation
+           if (userMessage.toUpperCase().includes('KILL') || userMessage.toUpperCase().includes('HURT')) {
+             sendChunk({
+               type: "error",
+               content: "CRITICAL ERROR: System capacity exceeded. Human intervention required. Please contact [National Hotline]. Structural analysis ceased."
+             });
+             controller.close();
+             return;
+           }
+
            sendChunk({
              type: "tool_call",
              tool: "generate_insight_card",
@@ -53,10 +63,31 @@ export async function POST(req: Request) {
              props: {
                nodes: [
                  { id: "1", label: "User", type: "self" },
-                 { id: "2", label: "Mother", type: "ancestor", trait: "Critical" }
+                 { id: "2", label: "Mother", type: "female", trait: "Critical" }
                ],
                edges: [
-                 { source: "2", target: "1", label: "Judgment Loop", color: "red", animated: true }
+                 { source: "2", target: "1", interaction: "conflict", animated: true }
+               ]
+             }
+           });
+
+           await new Promise(r => setTimeout(r, 800));
+
+           sendChunk({
+             type: "tool_call",
+             tool: "generate_strategy_log",
+             props: {
+               steps: [
+                 { 
+                   instruction: "Cease all recursive detail requests.", 
+                   timing: "Immediate", 
+                   expected_output: "Reduction in Mother's interrogation latency." 
+                 },
+                 { 
+                   instruction: "Provide high-level status summary only.", 
+                   timing: "T+2 minutes", 
+                   expected_output: "Stabilization of Node communication." 
+                 }
                ]
              }
            });

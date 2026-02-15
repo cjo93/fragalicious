@@ -1,8 +1,8 @@
-import CommandStream from "@/components/CommandStream";
+import CommandStream from '@/components/CommandStream';
 
-export default function Home() {
+export default function Page() {
   return (
-    <main className="min-h-screen bg-black overflow-hidden">
+    <main className="min-h-screen bg-void">
       <CommandStream />
     </main>
   );

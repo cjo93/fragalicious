@@ -1,36 +1,44 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# DEFRAG: The Operating System for Human Design
+
+## Single Source of Truth (SSOT)
+This project is governed by the [DEFRAG Universal Charter](./DEFRAG_SSOT_Master.md) and the Technical Addendum. All philosophy, architecture, and engineering standards are defined there.
 
 ## Getting Started
 
-First, run the development server:
+1. **Clone the repository**
+2. **Install dependencies:**
+   ```bash
+   npm install
+   ```
+3. **Configure environment variables:**
+   - Copy `.env.example` to `.env` and fill in your Supabase, Stripe, and Modal.com credentials.
+4. **Run the development server:**
+   ```bash
+   npm run dev
+   ```
+5. **Open the dashboard:**
+   [http://localhost:3000/dashboard](http://localhost:3000/dashboard)
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+## Deployment
+- **Frontend:** Deploy to Vercel. Set all environment variables in the Vercel dashboard.
+- **Backend (Python):** Deploy FastAPI service to Railway, Render, or Modal.com. Ensure Swiss Ephemeris binaries are available.
+- **Database:** Supabase (PostgreSQL). Apply schema from `/supabase/migrations`.
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Documentation
+- [DEFRAG Universal Charter](./DEFRAG_SSOT_Master.md)
+- [Technical Addendum](./DEFRAG_Technical_Addendum.md)
+- [IDE Agent Handover](./IDE_Agent_Handover.md)
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Onboarding
+- New developers: Read the SSOT and Addendum before coding.
+- Users: Log in, input your birth data, and explore your dashboard.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Support & Feedback
+- For issues, open a GitHub issue or email support@defrag.app
+- Feedback: Use the feedback widget in the dashboard footer.
 
-## Learn More
+## Legal
+- See the Charter for privacy, liability, and terms.
 
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+---
+This is a category-defining platform. Build and operate with precision.

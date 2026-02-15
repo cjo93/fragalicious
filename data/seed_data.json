@@ -1,0 +1,52 @@
+{
+  "keys": [
+    {
+      "gate_number": 1,
+      "gate_name": "Self-Expression",
+      "center": "G",
+      "circuit": "Individual",
+      "shadow": "Entropy",
+      "gift": "Freshness",
+      "siddhi": "Beauty",
+      "victim_pattern": "Victim of Entropy",
+      "programming_partner": 2,
+      "codon_group": "Ring of Fire"
+    },
+    {
+      "gate_number": 2,
+      "gate_name": "Direction of the Self",
+      "center": "G",
+      "circuit": "Individual",
+      "shadow": "Dislocation",
+      "gift": "Orientation",
+      "siddhi": "Unity",
+      "victim_pattern": "Victim of Dislocation",
+      "programming_partner": 1,
+      "codon_group": "Ring of Water"
+    },
+    {
+      "gate_number": 63,
+      "gate_name": "After Completion",
+      "center": "Head",
+      "circuit": "Collective",
+      "shadow": "Doubt",
+      "gift": "Inquiry",
+      "siddhi": "Truth",
+      "victim_pattern": "Victim of Doubt",
+      "programming_partner": 64,
+      "codon_group": "Ring of Divinity"
+    },
+    {
+      "gate_number": 64,
+      "gate_name": "Before Completion",
+      "center": "Head",
+      "circuit": "Collective",
+      "shadow": "Confusion",
+      "gift": "Imagination",
+      "siddhi": "Illumination",
+      "victim_pattern": "Victim of Confusion",
+      "programming_partner": 63,
+      "codon_group": "Ring of Divinity"
+    }
+  ]
+}
