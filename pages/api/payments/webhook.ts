@@ -1,4 +1,5 @@
 import { stripe } from '@/lib/stripe';
+import { handleStripeEvent } from '@/lib/payments/webhookHandlers';
 import { NextApiRequest, NextApiResponse } from 'next';
 
 export const config = {
@@ -22,27 +23,14 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   const signature = req.headers['stripe-signature'] as string | undefined;
   if (!signature) return res.status(400).send('Missing stripe-signature');
 
+  const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
+  if (!webhookSecret) return res.status(500).send('Webhook secret not configured');
+
   const rawBody = await readRawBody(req);
 
   try {
-    const event = stripe.webhooks.constructEvent(
-      rawBody,
-      signature,
-      process.env.STRIPE_WEBHOOK_SECRET || ''
-    );
-
-    switch (event.type) {
-      case 'checkout.session.completed':
-      case 'customer.subscription.updated':
-      case 'customer.subscription.deleted':
-      case 'invoice.paid':
-        // Fulfillment handled in later steps with idempotency and Supabase writes.
-        break;
-      default:
-        // Ignore unsupported event types.
-        break;
-    }
-
+    const event = stripe.webhooks.constructEvent(rawBody, signature, webhookSecret);
+    await handleStripeEvent(event);
     return res.status(200).json({ received: true });
   } catch (err: any) {
     return res.status(400).send(`Webhook Error: ${err.message}`);
