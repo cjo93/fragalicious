@@ -1,14 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { createPagesServerClient } from '@supabase/auth-helpers-nextjs';
-import { createCheckoutSession, CheckoutMode } from '@/lib/stripe';
-
-const PLAN_CODES = ['manual_27', 'os_monthly_9_99'] as const;
-
-type PlanCode = (typeof PLAN_CODES)[number];
-
-type CreateCheckoutBody = {
-  plan_code?: string;
-};
+import { createCheckoutSession } from '@/lib/stripe';
+import { getPlanConfig } from '@/lib/payments/planCatalog';
 
 function resolveSiteUrl(): string {
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || process.env.SITE_URL;
@@ -16,17 +9,6 @@ function resolveSiteUrl(): string {
     throw new Error('SITE_URL is not configured');
   }
   return siteUrl.replace(/\/$/, '');
-}
-
-function getPriceId(planCode: PlanCode): string {
-  if (planCode === 'manual_27') {
-    return process.env.STRIPE_PRICE_MANUAL_27 || '';
-  }
-  return process.env.STRIPE_PRICE_OS_MONTHLY_9_99 || '';
-}
-
-function getMode(planCode: PlanCode): CheckoutMode {
-  return planCode === 'os_monthly_9_99' ? 'subscription' : 'payment';
 }
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
@@ -44,15 +26,14 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       return res.status(401).json({ error: 'Unauthorized' });
     }
 
-    const body = req.body as CreateCheckoutBody;
-    if (!body?.plan_code || !PLAN_CODES.includes(body.plan_code as PlanCode)) {
+    const planCode = req.body?.plan_code as string | undefined;
+    const planConfig = planCode ? getPlanConfig(planCode) : null;
+
+    if (!planConfig) {
       return res.status(400).json({ error: 'Invalid plan_code' });
     }
 
-    const planCode = body.plan_code as PlanCode;
-    const priceId = getPriceId(planCode);
-
-    if (!priceId) {
+    if (!planConfig.priceId) {
       return res.status(500).json({ error: 'Pricing is not configured' });
     }
 
@@ -61,13 +42,13 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     const cancelUrl = `${siteUrl}/pricing?canceled=1`;
 
     const url = await createCheckoutSession({
-      priceId,
-      mode: getMode(planCode),
+      priceId: planConfig.priceId,
+      mode: planConfig.mode,
       successUrl,
       cancelUrl,
       clientReferenceId: user.id,
       metadata: {
-        plan_code: planCode,
+        plan_code: planConfig.planCode,
         user_id: user.id,
       },
     });
