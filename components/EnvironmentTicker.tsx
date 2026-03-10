@@ -46,13 +46,13 @@ const EnvironmentTicker: React.FC = () => {
   return (
     <div className="h-8 bg-void border-t border-border flex items-center px-4 text-[10px] font-mono text-slate-500 uppercase tracking-widest w-full">
       <span className="text-slate-600">UTC {time}</span>
-      <span className="mx-2">//</span>
+      <span className="mx-2">{'//'}</span>
       {weather === 'STABLE' ? (
         <span className="text-green-500">SOLAR_WIND: STABLE</span>
       ) : (
         <span className="text-warning animate-pulse">SOLAR_WIND: HIGH{activeGate ? ` // GATE_${activeGate} ACTIVE` : ''}</span>
       )}
-      <span className="mx-2">//</span>
+      <span className="mx-2">{'//'}</span>
       <span className={status === 'ONLINE' ? 'text-slate-500' : 'text-warning animate-pulse'}>SYSTEM: {status}</span>
     </div>
   );

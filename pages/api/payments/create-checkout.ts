@@ -43,7 +43,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
     const url = await createCheckoutSession({
       priceId: planConfig.priceId,
-      mode: planConfig.mode,
+      mode: planConfig.mode as 'subscription' | 'payment',
       successUrl,
       cancelUrl,
       clientReferenceId: user.id,

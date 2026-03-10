@@ -1,4 +1,5 @@
 "use client";
+export const dynamic = 'force-dynamic';
 import { ErrorBoundary } from 'react-error-boundary';
 import { useEffect, useState } from 'react';
 import { useLineage, useGlitchDetails } from '../../hooks/useSystemData';
@@ -45,6 +46,13 @@ export default function DashboardPage() {
     selection && (selection as ConnectionEdgeData).type === 'EDGE' ? (selection as ConnectionEdgeData).id : null
   );
 
+  // Add logging for debugging
+  useEffect(() => {
+    if (userId) console.log('User ID:', userId);
+    if (lineageData) console.log('Lineage Data:', lineageData);
+    if (selection) console.log('Selection:', selection);
+  }, [userId, lineageData, selection]);
+
   // Show loading state while userId is being fetched
   if (userLoading) return <GraphSkeleton />;
   // Loading state
@@ -70,13 +78,6 @@ export default function DashboardPage() {
     safeLineageData.nodes = safeLineageData.nodes.map((n: any) => JSON.parse(JSON.stringify(n)));
     safeLineageData.edges = safeLineageData.edges.map((e: any) => JSON.parse(JSON.stringify(e)));
   }
-
-  // Add logging for debugging
-  useEffect(() => {
-    if (userId) console.log('User ID:', userId);
-    if (lineageData) console.log('Lineage Data:', lineageData);
-    if (selection) console.log('Selection:', selection);
-  }, [userId, lineageData, selection]);
 
   return (
     <ErrorBoundary FallbackComponent={DashboardPageErrorFallback}>

@@ -1,7 +1,14 @@
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
 import axios from 'axios';
 
-const supabase = createClientComponentClient();
+let supabaseClient: ReturnType<typeof createClientComponentClient> | null = null;
+
+function getSupabaseClient() {
+  if (!supabaseClient) {
+    supabaseClient = createClientComponentClient();
+  }
+  return supabaseClient;
+}
 
 export interface BirthDataInput {
   name: string;
@@ -75,6 +82,7 @@ api.interceptors.response.use(
 );
 
 export async function getUserCredits(userId: string): Promise<number> {
+  const supabase = getSupabaseClient();
   const { data, error } = await supabase
     .from('profiles')
     .select('credits_balance')
@@ -89,6 +97,7 @@ export async function getUserCredits(userId: string): Promise<number> {
 }
 
 export async function addCredits(userId: string, amount: number): Promise<void> {
+  const supabase = getSupabaseClient();
   // Usually called via server-side webhook, but included here for completeness
   const current = await getUserCredits(userId);
   await supabase
@@ -98,6 +107,7 @@ export async function addCredits(userId: string, amount: number): Promise<void> 
 }
 
 export async function decrementCredits(userId: string, amount: number): Promise<boolean> {
+  const supabase = getSupabaseClient();
   const current = await getUserCredits(userId);
   if (current < amount) return false;
 
